@@ -90,12 +90,10 @@ class Supremacy():
 
 class GameDoesNotExistError(Exception):
     """Raise when game does not exist"""
-    pass
 
 
 class ServerChangeError(Exception):
     """Raise when server has changed"""
-    pass
 
 
 def print_json(json_text):
