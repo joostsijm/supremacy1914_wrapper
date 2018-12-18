@@ -38,6 +38,10 @@ class Supremacy():
         self.url = url
         self.default_params["gameID"] = game_id
 
+    def all(self):
+        """Return all information"""
+        return self._request()
+
     def game(self):
         """Return game information"""
         return self._request(12)
@@ -63,10 +67,12 @@ class Supremacy():
         """Return list of relations between people"""
         return self._request(5)
 
-    def _request(self, state_type, day=None):
+    def _request(self, state_type=None, day=None):
         """Make request to the server"""
         params = self.default_params
-        params["stateType"] = state_type
+
+        if state_type is not None:
+            params["stateType"] = state_type
 
         if day is not None:
             params["option"] = day
