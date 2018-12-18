@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="supremacy1914_wrapper",
-    version="0.1.0",
+    version="0.1.2",
     author="Joost Sijm",
     author_email="joostsijm@gmail.com",
     description="Supremacy1914 API wrapper in Python",
