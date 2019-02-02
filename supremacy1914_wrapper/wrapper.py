@@ -10,6 +10,7 @@ class Supremacy():
 
     game_id = None
     url = None
+    debug = 0
 
     default_params = {
         "@c": "ultshared.action.UltUpdateGameStateAction",
@@ -32,11 +33,17 @@ class Supremacy():
         "Cache-Control": "no-cache"
     }
 
-    def __init__(self, game_id, url):
+    def __init__(self, game_id, url, debug=None):
         """Initialize api"""
         self.game_id = game_id
         self.url = url
         self.default_params["gameID"] = game_id
+        if debug and isinstance(debug, int):
+            self.debug = debug
+
+    def all(self):
+        """Return all information"""
+        return self._request()
 
     def game(self):
         """Return game information"""
@@ -63,10 +70,12 @@ class Supremacy():
         """Return list of relations between people"""
         return self._request(5)
 
-    def _request(self, state_type, day=None):
+    def _request(self, state_type=None, day=None):
         """Make request to the server"""
         params = self.default_params
-        params["stateType"] = state_type
+
+        if state_type is not None:
+            params["stateType"] = state_type
 
         if day is not None:
             params["option"] = day
@@ -74,15 +83,18 @@ class Supremacy():
         request = requests.post(self.url, headers=self.headers, json=params)
         response = json.loads(request.text)
 
+        if self.debug >= 2:
+            print_json(response)
+
         if response["result"]["@c"] == "ultshared.rpc.UltSwitchServerException":
             if "newHostName" in response["result"]:
                 new_url = "http://%s" % response["result"]["newHostName"]
-                print("new host: %s for %s" % (new_url, self.game_id))
-
+                if self.debug >= 1:
+                    print("new host: %s for %s" % (new_url, self.game_id))
                 raise ServerChangeError(new_url)
             else:
-                print("Game %s does not exist" % self.game_id)
-
+                if self.debug >= 1:
+                    print("Game %s does not exist" % self.game_id)
                 raise GameDoesNotExistError("Game %s is not found" % self.game_id)
 
         return response["result"]
