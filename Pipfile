@@ -4,9 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-request = "*"
+requests = "*"
 
 [dev-packages]
+pytest = "*"
+pytest-vcr = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3"

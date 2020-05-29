@@ -33,10 +33,10 @@ class Supremacy():
         "Cache-Control": "no-cache"
     }
 
-    def __init__(self, game_id, url, debug=None):
+    def __init__(self, game_id, url=None, debug=None):
         """Initialize api"""
         self.game_id = game_id
-        self.url = url
+        self.url = url if url else "http://xgs1.c.bytro.com"
         self.default_params["gameID"] = game_id
         if debug and isinstance(debug, int):
             self.debug = debug
@@ -52,7 +52,7 @@ class Supremacy():
     def coalitions(self):
         """Return coalition list and members"""
         result = self._request(2)
-        return result["teams"]
+        return result["teams"] if "teams" in result else None
 
     def players(self):
         """Return list of players"""
@@ -86,16 +86,16 @@ class Supremacy():
         if self.debug >= 2:
             print_json(response)
 
-        if response["result"]["@c"] == "ultshared.rpc.UltSwitchServerException":
+        if "@c" in response["result"] and \
+                response["result"]["@c"] == "ultshared.rpc.UltSwitchServerException":
             if "newHostName" in response["result"]:
                 new_url = "http://%s" % response["result"]["newHostName"]
                 if self.debug >= 1:
                     print("new host: %s for %s" % (new_url, self.game_id))
                 raise ServerChangeError(new_url)
-            else:
-                if self.debug >= 1:
-                    print("Game %s does not exist" % self.game_id)
-                raise GameDoesNotExistError("Game %s is not found" % self.game_id)
+            if self.debug >= 1:
+                print("Game %s does not exist" % self.game_id)
+            raise GameDoesNotExistError("Game %s is not found" % self.game_id)
 
         return response["result"]
 
