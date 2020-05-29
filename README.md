@@ -8,25 +8,51 @@ You'll only need to supply the server URL and the game\_id before you'll be able
 
 ```bash
 $ pip install supremacy1914-wrapper
-
 ```
 
-## Simple Demo
+## Demo
+
+It's advised to store the server url for the game you want to request. If you don't have the server url you can make a Supremacy instance without the url parameter, wrap it in a try except to get the server url.
 
 ```python
-from supremacy1914_wrapper import Supremacy
+from supremacy1914_wrapper import Supremacy, ServerChangeError 
 
-# Create an instance using game_id and host:
+# Create a Supremacy instance using game id
+supremacy = Supremacy("2502620")
 
-sup = Supremacy("2502620", "http://xgs1.c.bytro.com")
+# Send a request and except server change error
+try:
+    result = supremacy.players()
+except ServerChangeError as exception:
+    # update the url in the Supremacy instance
+    supremacy.url = str(exception)
+    result = supremacy.players()
+```
 
-# get players in JSON format 
-sup.players()
+When you have to server url from the game you can pass it into the Supremacy constructor. Make sure to use a try except because the server changes over time.
+
+```python
+from supremacy1914_wrapper import Supremacy, ServerChangeError 
+
+# Create a Supremacy instance using game id and server url
+supremacy = Supremacy("2502620", "http://xgs1.c.bytro.com")
+
+# Send a request and except server change error
+try:
+    result = supremacy.players()
+except ServerChangeError as exception:
+    # update the url in the Supremacy instance
+    supremacy.url = str(exception)
+    result = supremacy.players()
 ```
 
 ## Documentation
 
 Other information about functions and exceptions can be found on the [wiki.](https://github.com/joostsijm/supremacy1914_wrapper/wiki)
+
+## Tests
+
+Testing is done with PyTest, to run the tests use the command `pytest`. The following environment variables are required: `TEST_GAME_ID` and `TEST_GAME_URL`, save those in the `.env` file for convince
 
 ## Development
 
